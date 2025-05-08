@@ -1,0 +1,6 @@
+.hidden-scroll-bar{
+    scrollbar-color: blue;
+    scrollbar-arrow-color: blue;
+    scrollbar-track-color: blue;
+    scrollbar-width: 0px;
+}

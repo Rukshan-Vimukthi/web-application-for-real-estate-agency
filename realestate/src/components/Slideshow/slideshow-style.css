@@ -1,0 +1,23 @@
+.slide-show-main-container{
+    width: 100%;
+    height: 200px;
+    padding: 0px;
+    position: relative;
+    left: 12px;
+}
+
+.slide-show-controls-container{
+    position: absolute;
+}
+
+
+.slider-navigation-button:hover{
+    font-weight: bolder;
+    cursor: pointer;
+}
+
+
+.slide-show-image-container{
+    background-size: cover;
+    background-repeat: no-repeat;
+}

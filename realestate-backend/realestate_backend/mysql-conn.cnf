@@ -1,0 +1,7 @@
+[client]
+DATABASE=real_estate_agency
+USER=root
+PASSWORD=root@techlix2002
+DEFAULT-CHARACTER-SET = utf8
+HOST=127.0.0.1
+PORT=3306

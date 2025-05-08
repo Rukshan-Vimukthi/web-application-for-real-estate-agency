@@ -1,0 +1,10 @@
+.dialog-close-btn{
+    color: white;
+    font-size: 25px;
+    font-weight: bolder;
+}
+
+.dialog-close-btn:hover{
+    color: red;
+    cursor: pointer;
+}

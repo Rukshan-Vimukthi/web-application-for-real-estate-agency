@@ -1,0 +1,18 @@
+.form-control-style{
+    background-color: #FFFFFF55;
+    outline: #0055FF55;
+    outline-width: 2px;
+    border: #0055FF55;
+    border-width: 2px;
+    color: #00FF00;
+}
+
+
+.form-input{
+    border: solid !important;
+    border-color: #0055FFAA !important;
+    border-width: 1px !important;
+    outline: solid !important;
+    outline-color: #0055FF44 !important;
+    outline-width: 2px !important;
+}

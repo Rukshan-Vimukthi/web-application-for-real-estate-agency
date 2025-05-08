@@ -1,0 +1,70 @@
+
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap-icons-1.10.5/font/bootstrap-icons.css' %}"/>
+    <link rel="stylesheet" href="{% static 'custom-admin-style.css' %}"/>
+    <style>
+        body{
+            background-color: black;
+        }
+    </style>
+</head>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-white">
+            <div class="row">
+                <!-- <button class="btn btn-primary">Button</button> -->
+                <div class="col-6 d-flex flex-column gap-2" style="scrollbar-color: transparent transparent;">
+                    <div class="row d-flex justify-content-end">
+                        <div class="col-3">
+                            <label class=" d-flex align-items-center justify-content-center gap-2 p-2 rounded-2 bg-primary text-white" for="media-file"><i class="bi bi-pencil-fill"></i>Change Media</label>
+                            {% csrf_token %}
+                            <input type="file" id="media-file" hidden onchange="changeCurrentlySelectedMedia();"/>
+                        </div>
+                        <button class="btn btn-primary w-auto d-flex gap-2" onclick="uploadNewMediaFile();">Apply changes</button>
+                    </div>
+                    <div class="row" style="height: 350px;" id="image-preview">
+                    </div>
+                    <div class="row d-flex justify-content-center flex-nowrap overflow-x-scroll gap-2">
+                        {% for media in object.propertymedia_set.all %}
+                            <div class="" id="{{ media.media_id }}" style="background-image: url('/MEDIA/{{media.media_path}}'); background-size: cover; background-repeat: no-repeat; width: 150px; height: 110px;" onclick="changeImage(this);">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <p>Bedrooms: {{ object.number_of_bedrooms }}</p>
+                <p>Bathrooms: {{ object.number_of_bathrooms }}</p>
+                <p>Garages: {{ object.number_of_garages }}</p>
+                <p>Floors: {{ object.number_of_floors }}</p>
+                <p>Area: {{ object.area }} sqft</p>
+                <p>Price: {{ object.price }}</p>
+                <p>Country: {{ object.country }}</p>
+                <p>City: {{ object.city }}</p>
+                <p>Status: {{ object.status.status }}</p>
+                <p>Available Date: {{ object.available_date }}</p>
+
+            </div>
+        </div>
+        <div class="col-12 d-none position-fixed top-0 start-0 bg-black vw-100 vh-100 text-white pt-5" id="data-edit-form">
+            <div class="row d-flex justify-content-center">
+                <div class="col-6">
+                    <div class="row fs-3">
+                        <div class="col-11">Edit Home data</div>
+                        <div class="col-1">
+                            <button class="btn p-0 close-btn" onclick="toggleEditHomeDataFormVisibility();"><i class="bi bi-x-square fs-3"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'house-detail.js' %}"></script>
+{% endblock %}
