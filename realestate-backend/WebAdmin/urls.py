@@ -9,4 +9,5 @@ urlpatterns = [
     path("agents/register", register_agent),
     path("agent/update", update_agent),
     path("agents/delete", delete_agent),
+    path("login", log_admin_user_in),
 ]

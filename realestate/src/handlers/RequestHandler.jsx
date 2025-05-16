@@ -50,9 +50,9 @@ export default function RequestHandler({children}){
 
 
     if (isAuthenticated == null){
-        return <Loading/>
+        return <Loading/>;
     }else{
-        return isAuthenticated ? children : <Navigate to="/login"/>
+        return isAuthenticated ? children : <Navigate to="/login"/>;
     }
 
 }

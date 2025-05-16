@@ -27,6 +27,9 @@ class Land(models.Model):
 
 class House(models.Model):
     house_id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=100, null=True)
+    description = models.TextField(null=True)
+    year_built = models.CharField(max_length=4, null=True)
     number_of_bedrooms = models.IntegerField()
     number_of_bathrooms = models.IntegerField()
     number_of_garages = models.IntegerField()
@@ -34,15 +37,18 @@ class House(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     area = models.FloatField()
-    address_line_1 = models.CharField(max_length=200)
-    address_line_2 = models.CharField(max_length=200, null=True, blank=True)
+    street = models.CharField(max_length=200, null=True)
     price = models.FloatField()
+    cooling = models.CharField(max_length=50, null=True)
+    heating = models.CharField(max_length=50, null=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     status = models.ForeignKey(EstateStatus, on_delete=models.CASCADE)
     available_date = models.DateField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    listed_date = models.DateField(null=True)
+    zip_code = models.CharField(null=True, max_length=20)
     agent = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
 
 

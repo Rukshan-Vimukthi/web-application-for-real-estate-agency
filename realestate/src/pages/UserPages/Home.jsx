@@ -11,6 +11,7 @@ import FeaturedListingHouse4 from "../../assets/Images/Houses/features-listing-h
 import OfficeRoom from "../../assets/Images/Houses/realistic-office-room.png";
 
 import "../styles/Home.css"
+import "../styles/styles.css"
 import { CalendarEvent, CardImage } from 'react-bootstrap-icons';
 
 import {Calendar, Handshake, House, Search} from "lucide-react"
@@ -50,20 +51,42 @@ export default function Home(){
 
                 <Row className='p-5 bg-black text-white gap-5 gap-md-0'>
 
-                    <Col md={6} className=" d-flex flex-column align-items-center justify-content-center">
+                    <Col xs={12} md={4} className=" d-flex flex-column align-items-center justify-content-center">
                         <h3 className="text-center text-md-start">
                             Apply to become a seller
                         </h3>
                         <p className='text-center'>
                             Get a change to sell the properties by applying for seller position on the platform
                         </p>
-                        <button className='btn text-white rounded-5 fs-5 py-2 px-4' style={{backgroundColor: "#000000", borderColor: "#FFFFFF", bolder: "solid", borderWidth: "2px"}}>
-                            Apply for seller
-                        </button>
+                        <a href="/realtor/">
+                            <button 
+                                className='btn text-white rounded-5 fs-5 py-2 px-4' 
+                                style={{backgroundColor: "#000000", borderColor: "#FFFFFF", bolder: "solid", borderWidth: "2px"}}>
+                                Apply for seller
+                            </button>
+                        </a>
                     </Col>
 
-                    <Col md={6} className="col-md-6 d-flex flex-column justify-content-center align-items-center">
+                    <Col xs={12} md={4} className=" d-flex flex-column align-items-center justify-content-center">
+                        <h3 className="text-center text-md-start">
+                            🔐 Realtor Login
+                        </h3>
+                        <p className='text-center'>
+                            Welcome back! If you're a registered realtor on our platform, you can access your dashboard, 
+                            manage your property listings, and connect with potential buyers or renters. Use the button 
+                            below to securely log in to your account and continue growing your real estate business with 
+                            us.
+                        </p>
+                        <a href="/realtor/login">
+                            <button 
+                                className='btn text-white rounded-5 fs-5 py-2 px-4' 
+                                style={{backgroundColor: "#0000AA44", borderColor: "#FFFFFF", bolder: "solid", borderWidth: "2px"}}>
+                                👉 Login
+                            </button>
+                        </a>
+                    </Col>
 
+                    <Col xs={12} md={4} className=" d-flex flex-column justify-content-center align-items-center">
                         <h3>
                             Register as a buyer
                         </h3>
@@ -156,7 +179,7 @@ export default function Home(){
                     <Col sm={12} className='px-5 pb-5'>
                         <Row className='fs-1 fw-bolder text-white pt-4'>How it works?</Row>
                         <Row className='pt-4 gap-5 justify-content-center'>
-                            <Col xs={12} md={3} className="rounded-3 px-4 py-3" style={{backgroundColor: "#88AAFF22"}}>
+                            <Col xs={12} md={3} className="rounded-3 px-4 py-3 hover-zoom" style={{backgroundColor: "#88AAFF22"}}>
                                 <Row className="gap-3 gap-lg-0">
                                     <Col xs={12} lg={3} className='d-flex align-items-center justify-content-center justify-content-lg-start'>
                                         <Search color='#88AAFF' width={"50px"} height={"50px"}/>
@@ -170,7 +193,7 @@ export default function Home(){
                                 </Row>
                             </Col>
 
-                            <Col xs={12} md={3} className="rounded-3 px-4 py-3" style={{backgroundColor: "#88AAFF22"}}>
+                            <Col xs={12} md={3} className="rounded-3 px-4 py-3 hover-zoom" style={{backgroundColor: "#88AAFF22"}}>
                                 <Row className="gap-3 gap-lg-0">
                                     <Col xs={12} lg={3} className='d-flex align-items-center justify-content-center justify-content-lg-start'><Calendar color='#88AAFF' width={"50px"} height={"50px"}/></Col>
                                     <Col xs={12} lg={9}>
@@ -182,7 +205,7 @@ export default function Home(){
                                 </Row>
                             </Col>
 
-                            <Col xs={12} md={3} className="rounded-3 px-4 py-3" style={{backgroundColor: "#88AAFF22"}}>
+                            <Col xs={12} md={3} className="rounded-3 px-4 py-3 hover-zoom" style={{backgroundColor: "#88AAFF22"}}>
                                 <Row className="gap-3 gap-lg-0">
                                     <Col xs={12} lg={3} className='d-flex align-items-center justify-content-center justify-content-lg-start'><Handshake color='#88AAFF' width={"50px"} height={"50px"}/></Col>
                                     <Col xs={12} lg={9}>
@@ -194,7 +217,7 @@ export default function Home(){
                                 </Row>
                             </Col>
 
-                            <Col xs={12} md={3} className="rounded-3 px-4 py-3" style={{backgroundColor: "#88AAFF22"}}>
+                            <Col xs={12} md={3} className="rounded-3 px-4 py-3 hover-zoom" style={{backgroundColor: "#88AAFF22"}}>
                                 <Row className="gap-3 gap-lg-0">
                                     <Col xs={12} lg={3} className='d-flex align-items-center justify-content-center justify-content-lg-start'><House color='#88AAFF' width={"50px"} height={"50px"}/></Col>
                                     <Col xs={12} lg={9}>

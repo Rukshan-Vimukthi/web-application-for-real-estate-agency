@@ -1,4 +1,14 @@
+import { useRef, useState } from "react";
+
 export default function Login(props){
+
+    const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const authenticationStateRef = useRef(isAuthenticating);
+    const setAuthenticationStateRef = (newState) => {
+        authenticationStateRef.current = newState;
+        setIsAuthenticating(newState);
+    }
+
     return (
         <div className="d-flex flex-column text-white col-12 col-md-6 col-lg-4 border-3 bg-primary" style={{border: "solid", borderRadius: "20px", borderColor: "#0068FF", boxShadow: "0px 0px 5px 1px #00AAFFBB"}}>
             <div className="row p-2 d-flex justify-content-center rounded-top-4">
@@ -16,8 +26,8 @@ export default function Login(props){
                     </div>
                     <div className="row px-3 pb-5">
                         <button className="btn btn-primary" onClick={() => {
-                            props.login();
-                        }}>Login</button>
+                            props.login(setAuthenticationStateRef);
+                        }}>{authenticationStateRef.current ? "Authenticating..." : "Login"}</button>
                     </div>
                 </div>
             </div>

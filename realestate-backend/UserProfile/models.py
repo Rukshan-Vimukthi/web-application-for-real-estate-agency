@@ -44,6 +44,9 @@ class Customer(models.Model):
 class Agent(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_image = models.ImageField(null=True)
+    title = models.CharField(max_length=50, null=True)
+    bio = models.TextField(max_length=1500, null=True)
+    phone_number = models.CharField(max_length=15, null=True)    
 
 
 class HelpCenterUser(models.Model):

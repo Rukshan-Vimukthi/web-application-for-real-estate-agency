@@ -10,6 +10,9 @@ from Estates.models import *
 from UserProfile.models import *
 
 from django.conf import settings
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
+from django.contrib.auth import authenticate, login
+from rest_framework_simplejwt.tokens import RefreshToken
 
 import os
 
@@ -94,15 +97,21 @@ def update_house_data(request):
     files = request.FILES
 
     houseID = data["houseID"]
-    bedroomCount = data["bedroomCount"]
+    bedroomCount = data["bedRoomCount"]
     bathRoomCount = data["bathRoomCount"]
     garageCount = data["garageCount"]
     floorCount = data["floorCount"]
-    areaCount = data["areaCount"]
-    priceCount = data["priceCount"]
-    address = data["address"]
+    area = data["area"]
+    price = data["price"]
+    street = data["street"]
     city = data["city"]
+    state = data["state"]
     country = data["country"]
+    year_built = data["yearBuilt"]
+    cooling = data["cooling"]
+    heating = data["heating"]
+    description = data["description"]
+    title = data["title"]
 
     agentId = None
 
@@ -115,37 +124,71 @@ def update_house_data(request):
     # print(data)
     print(files)
 
-    houses = House.objects.filter(house_id=houseID)
+    house = House.objects.get(house_id=houseID)
 
     if agentId is not None:
-        houses.update(
-            number_of_bedrooms=bedroomCount,
-            number_of_bathrooms=bathRoomCount,
-            number_of_garages=garageCount,
-            number_of_floors=floorCount,
-            area=areaCount,
-            address_line_1=address,
-            price=priceCount,
-            country=country,
-            city=city,
-            agent=agentId
-        )
+        house.number_of_bedrooms=bedroomCount
+        house.number_of_bathrooms=bathRoomCount
+        house.number_of_garages=garageCount
+        house.number_of_floors=floorCount
+        house.area=area
+        house.street=street
+        house.price=price
+        house.country=Country.objects.get(country_id=country)
+        house.state=State.objects.get(id=state)
+        house.city=City.objects.get(city_id=city)
+        house.agent=agentId
+        house.year_built=year_built
+        house.cooling=cooling
+        house.heating=heating
+        house.description=description
+        house.title=title
     else:
-        houses.update(
-            number_of_bedrooms=bedroomCount,
-            number_of_bathrooms=bathRoomCount,
-            number_of_garages=garageCount,
-            number_of_floors=floorCount,
-            area=areaCount,
-            address_line_1=address,
-            price=priceCount,
-            country=country,
-            city=city
-        )
+        house.number_of_bedrooms=bedroomCount
+        house.number_of_bathrooms=bathRoomCount
+        house.number_of_garages=garageCount
+        house.number_of_floors=floorCount
+        house.area=area
+        house.street=street
+        house.price=price
+        house.country=Country.objects.get(country_id=country)
+        house.state=State.objects.get(id=state)
+        house.city=City.objects.get(city_id=city)
+        house.year_built=year_built
+        house.cooling=cooling
+        house.heating=heating
+        house.description=description
+        house.title=title
 
-    house = houses[0]
+    house.save()
 
-    print(dir(files))
+
+    # print(dir(files))
+
+    try:
+        thumbnail = int(data["thumbnail"])
+        for media in house.propertymedia_set.all():
+            if media.media_id == thumbnail:
+                media.is_thumbnail = True
+            else:
+                media.is_thumbnail = False
+            media.save()
+        house.save()
+    except Exception as exception:
+        print(exception)
+        pass
+
+    try:
+        imagesToDelete = data.getlist("imagesToDelete[]")
+        # print(imagesToDelete)
+        for media in house.propertymedia_set.all():
+            if imagesToDelete.__contains__(str(media.media_id)):
+                os.remove(media.media_path.path)
+                media.delete()
+        house.save()
+    except Exception as x:
+        # print(x)
+        pass
 
     if files.__len__() != 0:
         for key, value in files.items():
@@ -173,8 +216,8 @@ def delete_house(request):
                 print(media.media_path.path)
                 os.remove(media.media_path.path)
 
-                # media.delete()
-            # house.delete()
+                media.delete()
+            house.delete()
             # for media in media_set:
                 # print(media)
             # print(dir(house))
@@ -326,5 +369,28 @@ def delete_agent(request):
 
     response["status"] = "ok"
 
+    return Response(response)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+@authentication_classes([])
+def log_admin_user_in(request):
+    data = request.data
+
+    response = {"status": "failed"}
+
+    username = data['username']
+    password = data["password"]
+
+    user = authenticate(request, username=username, password=password)
+
+    if user.is_superuser:
+        login(request, user)
+        refresh_token = RefreshToken.for_user(user)
+        access_token = refresh_token.access_token
+        response["access"] = str(access_token)
+        response["refresh"] = str(refresh_token)
+        response["status"] = "success"
     return Response(response)
 

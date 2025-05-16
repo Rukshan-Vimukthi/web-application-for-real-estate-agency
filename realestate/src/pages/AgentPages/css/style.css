@@ -1,0 +1,17 @@
+.event-card{
+    transition: transform 0.3s ease-in;
+}
+
+.event-card:hover{
+    transform: scale(0.98);
+}
+
+
+.custom-switch .form-check-input:checked{
+    background-color: #05F !important;
+    border-color: #05F !important;
+}
+
+.custom-switch .form-check-input:focus{
+    border-color: "#05F" !important;
+}

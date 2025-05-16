@@ -22,7 +22,6 @@ urlpatterns = [
     path("user/chat/send", views.send_message),
 
     path('houses/register', views.list_houses),
-    path("admin/login", views.log_admin_user_in),
     
     path('anonymous/message/post', views.post_message_data),
     path('anonymous/message/get', views.get_message_data),
@@ -30,6 +29,9 @@ urlpatterns = [
 
     path("cc/get_chats", views.get_active_chats),
 
-    path("agent/login", views.agent_login),
-    path("agent/authenticate", views.agent_authenticate),
+    path("agent/authenticate", views.authenticate_agent),
+    path("agent/agent-information", views.get_agent_information),
+    path("agent/data/update", views.update_agent_information),
+    path("agents/all", views.get_agents_information),
+    path("agent/houses", views.get_agent_listed_houses),
 ]

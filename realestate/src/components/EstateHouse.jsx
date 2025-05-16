@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { initChat, isLoggedIn } from "../functions/common";
 import api from "../api/api";
 
-import {Col} from "react-bootstrap"
-
+import {Col, Row} from "react-bootstrap"
+import "./css/style.css"
 
 /**
  * props:
@@ -39,20 +39,23 @@ export default function EstateHouse(props){
     let numberOfGarages = props.garagesCount;
     let area = props.area;
 
+// Status (optional)	status
+// Listing Date (opt)	listing_date
+
     useEffect(() => {
-        if (props.status == 1){
+        if (props.status.id == 1){
             setStatus("available");
             tagColor = "#0000FF55";
             tagTextColor = "#0000BB";
-        }else if(props.status == 2){
+        }else if(props.status.id == 2){
             setStatus("sold out");
             tagColor = "#FF000055";
             tagTextColor = "#BB0000";
-        }else if(props.status == 3){
+        }else if(props.status.id == 3){
             setStatus("checking");
             tagColor = "#00FF0055";
             tagTextColor = "#00BB00";
-        }else if(props.status == 4){
+        }else if(props.status.id == 4){
             setStatus("rented");
             tagColor = "#FF000055";
             tagTextColor = "#BB0000";
@@ -84,13 +87,15 @@ export default function EstateHouse(props){
     }
 
     return (
-        <div className="col-12 col-md-4 card p-0" style={{width: "23rem"}}>
+        <div className="col-12 col-md-4 card p-0 zoom-on-hover" style={{width: "23rem"}}>
             {/* <div className="card-img">
                 <img src={image} width={"100%"} height={"200px"}/>
             </div> */}
             <SlideShow images={image} id={"slideshow-" + props.id}/>
             <div className="card-body">
                 <div className="col-12 px-2">
+                    <Row className="justify-content-end" style={{color: "#888", fontSize: "14px"}}>Listed on {props.dateListed}</Row>
+                    <Row className="fs-5 fw-semibold">{props.title}</Row>
                     <div className="row d-flex flex-xl-column align-items-start">
                         <div className="w-auto p-0">
                             <span className="w-auto d-flex justify-content-center rounded-2 px-3" style={{backgroundColor: tagColor, color: tagTextColor}}>{status}</span>
@@ -99,23 +104,22 @@ export default function EstateHouse(props){
                             {availableDate}
                         </div>
                     </div>
-                    <div className="row pb-2 gap-2">
+                    <div className="row pb-1 gap-2">
                         <div className="col-2 p-0">
-                            <FaBed/> {numberOfBedrooms}0
+                            <FaBed/> {numberOfBedrooms}
                         </div>
                         <div className="col-2 p-0">
-                            <FaShower/> {numberOfBathRooms}00
+                            <FaShower/> {numberOfBathRooms}
                         </div>
                         <div className="col-2 p-0">
-                            <GiHomeGarage/> {numberOfGarages}00
+                            <GiHomeGarage/> {numberOfGarages}
                         </div>
                         <div className="col-5 p-0">
                             <FaSquarespace/> {area} sqft
                         </div>
                     </div>
                     <div className="row">
-                        <span className="px-0 pt-3">{props.city.name}, {props.country.name}</span>
-                        <span className="px-0 pt-3" style={{fontSize: "12px", height: "50px"}}>{props.address}</span>
+                        <span className="px-0 pt-3">{props.street}, {props.city.name}, {props.state.name}, {props.country.name}</span>
                     </div>
                     <div className="row pt-2">
                         <div className="col-12 p-0 d-flex ">
@@ -137,7 +141,10 @@ export default function EstateHouse(props){
                     <div className="row">
                         <div className="col-12 d-flex flex-row gap-3 pb-2">
                             <button className="btn btn-primary w-100">View Property</button>
-                            <button className="btn text-white bg-black w-100">Request a visit</button>
+                            <button className="btn text-white bg-black w-100" onClick={() => {
+                                props.onRequestVisit();
+                            }
+                            }>Request a visit</button>
                         </div>
                         <div className="col-12">
                             <button className="btn text-white bg-black w-100 d-flex align-items-center justify-content-center gap-3" onClick={ () => {

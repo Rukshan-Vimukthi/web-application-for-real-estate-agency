@@ -1,0 +1,25 @@
+{
+    "id": 101,
+    "title": "Modern 4-Bedroom Family Home in Suburban Austin",
+    "description": "This beautifully designed 4-bedroom, 3-bathroom home offers modern living in a quiet suburban neighborhood of Austin, TX. Features include an open floor plan, large kitchen with granite countertops, a spacious backyard, and a 2-car garage. Perfect for families!",
+    "price": 489000,
+    "address": {
+      "street": "123 Willow Creek Dr",
+      "city": "Austin",
+      "state": "TX",
+      "zip_code": "78748",
+      "country": "USA"
+    },
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "area_sqft": 2450,
+    "lot_size_sqft": 6000,
+    "property_type": "Single Family Home",
+    "year_built": 2018,
+    "parking": "2-Car Garage",
+    "heating": "Central Gas",
+    "cooling": "Central Electric",
+    "status": "For Sale",
+    "listing_date": "2025-05-11"
+  }
+  

@@ -13,6 +13,7 @@ import "../css/admin-style.css";
 import DeleteConfirmationDialog from "../../components/bininstructions-components/Windows/DeleteConfirmationDialog";
 import EstateHouse from "../../components/EstateHouse";
 import { Col, Row } from "react-bootstrap";
+import ListHouseForm from "../../components/custom-components/ListHouseForm";
 
 
 export default function Houses() {
@@ -22,7 +23,6 @@ export default function Houses() {
 
     const [homeDialogVisibility, setHomeDialogVisibility] = useState(false);
 
-    const [selectedImages, setSelectedImages] = useState([]);
     const [selectedImagesForUpdate, setSelectedImagesForUpdate] = useState([]);
 
     const [expandFilter, setExpandFilter] = useState(false);
@@ -135,84 +135,7 @@ export default function Houses() {
 
     setFilter(data);
     loadHomes(data);
-};
-    
-
-    const registerHouse = async() => {
-        let numberOfBedrooms = document.getElementById("number-of-bedrooms").value;
-        let numberOfBathrooms = document.getElementById("number-of-bathrooms").value;
-        let numberOfGarages = document.getElementById("number-of-garages").value;
-        let numberOfFloors = document.getElementById("number-of-floors").value;
-        let area = document.getElementById("area").value;
-        let address = document.getElementById("address").value;
-        let price = document.getElementById("price").value; 
-
-        let country = document.getElementById("country").value;
-        let city = document.getElementById("city").value;
-
-        let selectedImages = Object.values(document.getElementsByName("selected-image"));
-        let selectedMediaFiles = document.getElementById("file-selector").files;
-
-        const uploadData = {
-            bedRoomCount: numberOfBedrooms,
-            bathRoomCount: numberOfBathrooms,
-            garageCount: numberOfGarages,
-            floorCount: numberOfFloors,
-            area: area,
-            address: address,
-            country: country,
-            city: city,
-            price: price
-        }
-
-        selectedImages.forEach(element => {
-            let element_name = element.name;
-            let fileObjIndex = Number.parseInt(element.id.split("selected-house-image-")[1]);
-
-            let selectedFile = selectedMediaFiles[fileObjIndex];
-            let check_box = document.getElementById("selected-house-image-" + fileObjIndex);
-            if (check_box.checked){
-                uploadData["thumbnail"] = selectedFile;
-            }else{
-                uploadData["image-" + fileObjIndex] = selectedFile;
-            }
-        });
-
-        const response = await api.post("api/v1/houses/register", uploadData, {headers: {"Content-Type": "multipart/form-data"}});
-        if (response.status === 200){
-            const data = response.data;
-            if (data.status == "ok"){
-                alert("House registered!");
-            }
-        }
-    }
-
-    const prepareSelectedFiles = async (isUpdate) => {
-        if (!isUpdate){
-            const fileChooser = document.getElementById("file-selector");
-            const files = fileChooser.files;
-
-            const imagePreviewComponents = [];
-
-            for (let i = 0; i < files.length; i++){
-                let file = URL.createObjectURL(files[i]);
-                imagePreviewComponents.push(<div className="col-4"><SelectedImagePreview image={file} id={"selected-house-image-" + i}/></div>);
-            }
-            setSelectedImages(imagePreviewComponents);
-        }else{
-            const fileChooser = document.getElementById("file-selector-update");
-            const files = fileChooser.files;
-
-            const imagePreviewComponents = [];
-
-            for (let i = 0; i < files.length; i++){
-                let file = URL.createObjectURL(files[i]);
-                imagePreviewComponents.push(<div className="col-4"><SelectedImagePreview image={file} id={"selected-house-image-update-" + i}/></div>);
-            }
-            console.log("Selected Images for update: ", imagePreviewComponents);
-            setSelectedImagesForUpdate(imagePreviewComponents);
-        }
-    }
+  };
 
     const getHouseList = async() => {
       // alert(filterString);
@@ -585,148 +508,8 @@ export default function Houses() {
       }}></DeleteConfirmationDialog>
 
       <div className="row">
-        <Dialog
-          title="Home listing form"
-          visible={homeDialogVisibility}
-          setVisibility={setHomeDialogVisibility}>
-          <div className="row">
-            <div className="col-4">
-              <label className="text-white ps-0 pt-2">Bedroom count</label>
-              <input
-                type="number"
-                className="form-control bg-transparent border-white"
-                id="number-of-bedrooms"
-              />
-            </div>
-            <div className="col-4">
-              <label className="text-white ps-0 pt-2">Bathroom count</label>
-              <input
-                type="number"
-                className="form-control bg-transparent border-white"
-                id="number-of-bathrooms"
-              />
-            </div>
-            <div className="col-4">
-              <label className="text-white ps-0 pt-2">Garage count</label>
-              <input
-                type="number"
-                className="form-control bg-transparent border-white"
-                id="number-of-garages"
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-4">
-              <label className="text-white ps-0 pt-2">Floor count</label>
-              <input
-                type="number"
-                className="form-control bg-transparent border-white"
-                id="number-of-floors"
-              />
-            </div>
-            <div className="col-4">
-              <label className="text-white ps-0 pt-2">Area</label>
-              <input
-                type="number"
-                className="form-control bg-transparent border-white"
-                id="area"
-              />
-            </div>
-            <div className="col-4">
-              <label className="text-white ps-0 pt-2">Price</label>
-              <input
-                type="number"
-                className="form-control bg-transparent border-white"
-                id="price"
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <label className="text-white pt-2">Address</label>
-              <input
-                type="text"
-                className="form-control bg-transparent border-white"
-                id="address"
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-4">
-              <select
-                className="form-select"
-                id="country"
-                onChange={(event) => {
-                  getStates(event.target.value);
-                }}
-              >
-                <option>Select your country</option>
-                {countries}
-              </select>
-            </div>
 
-            <div className="col-4">
-              <select
-                className="form-select"
-                id="country"
-                onChange={(event) => {
-                  getCities(event.target.value);
-                }}
-              >
-                <option>Select your state</option>
-                {states}
-              </select>
-            </div>
-
-            <div className="col-4">
-              <select className="form-select" id="city">
-                <option>Select your city</option>
-                {cities}
-              </select>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <label
-                for="file-selector"
-                className="p-2 rounded-2 bg-primary text-white d-flex justify-content-center align-items-center"
-              >
-                Choose Images
-              </label>
-              <input
-                type="file"
-                id="file-selector"
-                multiple
-                hidden
-                onChange={() => {
-                  prepareSelectedFiles(false);
-                }}
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <div
-                className="row mx-1 d-flex flex-row flex-nowrap align-items-center image-container gap-3"
-                style={{ height: "180px" }}
-              >
-                {selectedImages}
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <button
-                className="btn btn-primary w-100"
-                onClick={() => {
-                  registerHouse();
-                }}
-              >
-                Register
-              </button>
-            </div>
-          </div>
-        </Dialog>
+        <ListHouseForm visible={homeDialogVisibility} setVisibility={setHomeDialogVisibility}/>
 
         <div className="col-12">
           <div className="row align-items-end justify-content-start gap-3">

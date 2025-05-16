@@ -57,7 +57,7 @@ export default function Footer(){
                     </Col>
                     <Col xs={12} md={6} className="col-12 col-md-6">
                         <Row className="d-flex justify-content-center justify-content-md-end">
-                            <span className="bg-primary p-1 px-2 px-md-5 rounded-1 w-auto">Developed by bininstructions</span>
+                            <span className="bg-primary p-1 px-2 px-md-5 rounded-1 w-auto">Developed by Rukshan</span>
                         </Row>
                     </Col>
                 </Row>

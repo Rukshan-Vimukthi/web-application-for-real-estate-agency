@@ -4,3 +4,13 @@
     scrollbar-track-color: blue;
     scrollbar-width: 0px;
 }
+
+
+.hover-zoom{
+    transition: transform 0.15s ease-in;
+}
+
+
+.hover-zoom:hover{
+    transform: scale(1.1);
+}

@@ -12,7 +12,7 @@ import os
 
 @admin.register(House)
 class HouseAdmin(admin.ModelAdmin):
-    list_display = ['house_id', 'house', 'address_line_1', 'address_line_2', 'detail']
+    list_display = ['house_id', 'house', 'street', 'detail']
     # fields = ['propertymedia.thumbnail', 'media']
     
     def get_urls(self):

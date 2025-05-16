@@ -93,6 +93,21 @@ export function isLoggedIn(){
     }
 }
 
+export function isAgentLoggedIn(){
+    const accessToken = localStorage.getItem("A_ACCESS_TOKEN");
+    if (accessToken == null){
+        return false;
+    }else{
+        const decodedAccessToken = jwtDecode(accessToken);
+        const currentTime = Date.now() / 1000;
+        const expTime = decodedAccessToken.exp;
+        if (currentTime < expTime){
+            return true;
+        }
+        return false;
+    }
+}
+
 
 export const initChat = async(data) => {
     const response = await api.post("api/v1/user/chat/init", {agent_id: data});

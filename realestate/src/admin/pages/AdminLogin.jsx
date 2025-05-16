@@ -3,15 +3,13 @@ import api from "../../api/api";
 import Login from "../../components/bininstructions-components/Forms/Login";
 import "../css/admin-style.css";
 import { ACCESS, REFRESH } from "../../constants/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {Row} from "react-bootstrap";
 
 
 
 export default function AdminLogin(){
-    localStorage.clear();
-
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [authError, setAuthError] = useState("");
 
@@ -22,14 +20,13 @@ export default function AdminLogin(){
 
         setIsLoggingIn(true);
 
-        const response = await api.post("api/v1/admin/login", {"username": userName, "password": password});
+        const response = await api.post("api/admin/login", {"username": userName, "password": password});
         if(response.status === 200){
             let data = response.data;
             console.log(data);
             if (data.status == "success"){
-                const tokenResponse = await api.post("api/token/", {"username": userName, "password": password});
-                const accessToken = tokenResponse.data.access;
-                const refreshToken = tokenResponse.data.refresh;
+                const accessToken = data.access;
+                const refreshToken = data.refresh;
 
                 localStorage.setItem(ACCESS, accessToken);
                 localStorage.setItem(REFRESH, refreshToken);
@@ -44,6 +41,10 @@ export default function AdminLogin(){
             setAuthError("Something went wrong. Try again in 1 minute.");
         }
     };
+
+    useEffect(() => {
+        localStorage.clear();
+    }, []);
 
     return (        
         <div className="row bg-black d-flex justify-content-center align-items-center vh-100 vw-100">

@@ -19,7 +19,7 @@ export default function Profile(){
                     </SideNavBar>
                     <div className="col-2">
                     </div>
-                    <div className="col-10 bg-dark mt-5 bg-dark">
+                    <div className="col-10 bg-dark mt-5 bg-dark px-0">
                         <NavContent for="dashboard"></NavContent>
                         <NavContent for="houses"></NavContent>
                         <NavContent for="lands"></NavContent>

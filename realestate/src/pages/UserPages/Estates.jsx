@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import EstateHouse from "../../components/EstateHouse";
 import EstateItem from "../../components/EstateItem";
 import api from "../../api/api";
@@ -6,6 +6,7 @@ import { ACCESS, HOST } from "../../constants/constants";
 import Loading from "../../components/Loading";
 import { Filter, X } from "react-bootstrap-icons";
 import { Col, Row } from "react-bootstrap";
+import RequestPropertyVisitDialog from "../../components/RequestPropertyVisitDialog.jsx";
 
 
 import BillionaireHouseImage from "../../assets/Images/Houses/ChatGPT Image Apr 10, 2025, 10_45_27 AM.png"
@@ -17,6 +18,13 @@ export default function Estates(){
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
+
+    const [showRequestAVisitDialog, setShowRequestAVisitDialog] = useState(false);
+    const showRequestAVisitDialogRef = useRef(showRequestAVisitDialog);
+    const setShowRequestAVisitDialogRef = (data) => {
+        setShowRequestAVisitDialog(data);
+        showRequestAVisitDialogRef.current = data;
+    }
 
     const [expandFilter, setExpandFilter] = useState(false);
 
@@ -74,43 +82,51 @@ export default function Estates(){
             if (response.status === 200){
                 const data = Object.values(response.data.data);
 
-                let _items_ = data.map((element) => {
-                    console.log(element);
-                    let media_data = element.media;
-
-                    let thumbnail = null;
-                    let images = [null]
-
-                    Object.values(media_data).forEach(element_ => {
-                        if(element_.isThumbnail){
-                            thumbnail = HOST + element_.mediaPath;
-                            images[0] = thumbnail;
+                let _items_ = data.map((house) => {
+                    const images = [null];
+                    house.media.forEach(element => {
+                        if(element.isThumbnail){
+                            images[0] = element.mediaPath
                         }else{
-                            images.push(HOST + element_.mediaPath);
+                            images.push(element.mediaPath);
                         }
                     });
 
-                    console.log(images);
+                    const refreshedImages = images.slice(1);
 
-
-                    return <EstateHouse key={element.houseId}
-                    id={element.houseId}
-                    images={images}
-                    price={element.price} 
-                    country={element.country}
-                    city={element.city}
-                    address={element.addressLine1 + ", " + element.addressLine2}
-                    garagesCount={element.numberOfGarages}
-                    bathRoomsCount={element.numberOfBathrooms}
-                    bedroomCount={element.numberOfBedrooms}
-                    area={element.area}
-                    status={element.status}
-                    date={element.price}
-                    agent={element.agentUserName}
-                    agentProfileImage={element.agentProfileImage}
-                    agentId={element.agentId}
-                    agentFirstName={element.agentFirstName}
-                    agentLastName={element.agentLastName}/>
+                    // alert(house.title)
+                    return (
+                    <EstateHouse 
+                        key={house.houseId}
+                        id={house.houseId}
+                        title={house.title}
+                        description={house.description}
+                        yearBuilt={house.yearBuilt}
+                        dateListed={house.dateListed}
+                        images={images[0] == null ? refreshedImages : images}
+                        price={house.price} 
+                        country={house.country}
+                        state={house.state}
+                        city={house.city}
+                        street={house.street}
+                        garagesCount={house.numberOfGarages}
+                        bathRoomsCount={house.numberOfBathrooms}
+                        bedroomCount={house.numberOfBedrooms} 
+                        cooling={house.cooling} 
+                        heating={house.heating} 
+                        area={house.area}
+                        status={house.status}
+                        date={house.availableDate}
+                        agent={house.agentUserName}
+                        agentProfileImage={house.agentProfileImage}
+                        agentId={house.agentId}
+                        agentFirstName={house.agentFirstName}
+                        agentLastName={house.agentLastName}
+                        onRequestVisit={() => {
+                            setShowRequestAVisitDialogRef(true);
+                        }}
+                    />
+                    );
                 });
 
                 setItems(_items_);
@@ -152,6 +168,10 @@ export default function Estates(){
 
     return (
         <div className="row pt-2 h-auto mt-5">
+
+            <RequestPropertyVisitDialog visible={showRequestAVisitDialogRef.current} setVisible={setShowRequestAVisitDialogRef}>
+
+            </RequestPropertyVisitDialog>
 
             <div className="d-flex position-fixed ms-3 mt-2 align-items-center justify-content-center" 
                 style={
@@ -273,9 +293,9 @@ export default function Estates(){
                 <div className="row">
                     <div className="col-12 p-4 p-md-4">
                         {loading ? <Loading/> : 
-                        <div className="row flex-wrap justify-content-start gap-4" style={{marginTop: "-90px"}}>
+                        <Row className="flex-wrap justify-content-start gap-4 p-5" style={{marginTop: "-90px"}}>
                             {items}
-                        </div>
+                        </Row>
                         }
                     </div>
                 </div>

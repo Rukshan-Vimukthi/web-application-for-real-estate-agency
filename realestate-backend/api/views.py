@@ -3,6 +3,8 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.conf import settings
 
+from django.contrib.auth.hashers import make_password
+
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
@@ -23,6 +25,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from Estates.models import *
 
 import datetime
+import os
 
 
 @api_view(["GET"])
@@ -191,6 +194,161 @@ def get_user_lands(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def get_agent_listed_houses(request):
+    response = {"status": "failed"}
+    data = {}
+    json_data = []
+
+    beds_set = set()
+    baths_set = set()
+    garages_set = set()
+    floors_set = set()
+    area_set = set()
+    price_set = set()
+    status_set = set()
+    try:
+        agent = request.user.agent
+        house_objects = House.objects.filter(agent=agent)
+        for house in house_objects:
+            # house_data = str(serializers.serialize('json', house_objects))
+            
+            house_data_json = {
+                "houseId": house.house_id,
+                "title": house.title,
+                "description": house.description,
+                "cooling": house.cooling,
+                "heating": house.heating,
+                "yearBuilt": house.year_built,
+                "dateListed": house.listed_date,
+                "numberOfBedrooms": house.number_of_bedrooms,
+                "numberOfBathrooms": house.number_of_bathrooms,
+                "numberOfGarages": house.number_of_garages,
+                "numberOfFloors": house.number_of_floors,
+                "area": house.area,
+                "street": house.street,
+                "zipCode": house.zip_code,
+                "price": house.price,
+                "country": {
+                    "id": house.country.country_id,
+                    "name": house.country.county_name
+                },
+                "state": {
+                    "id": house.state.id,
+                    "name": house.state.name
+                },
+                "city": {
+                    "id": house.city.city_id,
+                    "name": house.city.city_name
+                },
+                "status": house.status.status,
+                "availableDate": str(house.available_date)
+            }
+
+            beds_set.add(house.number_of_bedrooms)
+            baths_set.add(house.number_of_bathrooms)
+            garages_set.add(house.number_of_garages)
+            floors_set.add(house.number_of_floors)
+            area_set.add(house.area)
+            price_set.add(house.price)
+            status_set.add(house.status.status)
+
+            media_array = []
+            for media in house.propertymedia_set.all():
+                media_array.append({
+                    "mediaId": media.media_id,
+                    "mediaPath": settings.DOMAIN + media.media_path.url,
+                    # "land": media.land,
+                    "isThumbnail": media.is_thumbnail
+                })
+
+            house_data_json["media"] = media_array
+
+            # if house.agent is not None:
+            #     house_data_json["agentId"] = house.agent.user.id
+            #     house_data_json["agentUserName"] = house.agent.user.username
+            #     house_data_json["agentFirstName"] = house.agent.user.first_name
+            #     house_data_json["agentLastName"] = house.agent.user.last_name
+            #     try:
+            #         house_data_json["agentProfileImage"] = settings.DOMAIN + house.agent.profile_image.url
+            #     except Exception as e:
+            #         # print(e)
+            #         house_data_json["agentProfileImage"] = None
+
+            json_data.append(house_data_json)
+            
+            username = ""
+            agent = house.agent
+            if agent is not None:
+                username = agent.user.username
+
+            # media_data = str(serializers.serialize('json', house.propertymedia_set.all()))
+            # data[house.house_id] = [house_data, media_data, username]
+
+        summary = {}
+
+        max_beds = 0
+        max_baths = 0
+        max_garages = 0
+        max_floors = 0
+        max_area = 0
+        max_price = 0
+        max_status = 0
+
+
+        if len(beds_set) > 0:
+            max_beds = max(beds_set)
+        if len(beds_set) > 0:
+            min_beds = min(beds_set)
+
+        if len(baths_set) > 0:
+            max_baths = max(baths_set)
+        if len(baths_set) > 0:
+            min_baths = min(baths_set)
+
+        if len(garages_set) > 0:
+            max_garages = max(garages_set)
+        if len(garages_set) > 0:
+            min_garages = min(garages_set)
+
+        if len(floors_set) > 0:
+            max_floors = max(floors_set)
+        if len(floors_set) > 0:
+            min_floors = min(floors_set)
+
+        if len(area_set) > 0:
+            max_area = max(area_set)
+        if len(area_set) > 0:
+            min_area = min(area_set)
+
+        if len(price_set) > 0:
+            max_price = max(price_set)
+        if len(price_set) > 0:
+            min_price = min(price_set)
+
+        if len(status_set) > 0:
+            max_status = max(status_set)
+        if len(status_set) > 0:
+            min_status = min(status_set)
+
+            
+        summary["beds"] = max_beds
+        summary["baths"] = max_baths
+        summary["garages"] = max_garages
+        summary["floors"] = max_floors
+        summary["area"] = max_area
+        summary["price"] = max_price
+        summary["status"] = max_status
+        response["houses"] = json_data
+        response["status"] = "ok"
+        # print(response)
+    except:
+        pass
+    return Response(response)
+
+
+@api_view(["POST"])
 @permission_classes([])
 @authentication_classes([])
 def get_house_list(request):
@@ -326,14 +484,23 @@ def get_house_list(request):
         
         house_data_json = {
             "houseId": house.house_id,
+            "title": house.title,
+            "yearBuilt": house.year_built,
             "numberOfBedrooms": house.number_of_bedrooms,
             "numberOfBathrooms": house.number_of_bathrooms,
             "numberOfGarages": house.number_of_garages,
             "numberOfFloors": house.number_of_floors,
+            "dateListed": house.listed_date,
+            "yearBuilt": house.year_built,
+            "cooling": house.cooling,
+            "heating": house.heating,
             "area": house.area,
-            "addressLine1": house.address_line_1,
-            "addressLine2": house.address_line_2,
+            "street": house.street,
             "price": house.price,
+            "state": {
+                "id": house.state.id,
+                "name": house.state.name
+                },
             "country": {
                 "id": house.country.country_id,
                 "name": house.country.county_name
@@ -342,7 +509,10 @@ def get_house_list(request):
                 "id": house.city.city_id,
                 "name": house.city.city_name
                 },
-            "status": house.status.status,
+            "status": {
+                "id": house.status.id,
+                "name": house.status.status
+            },
             "availableDate": str(house.available_date),
             "description": house.description
         }
@@ -457,26 +627,9 @@ def get_lands_list(request):
 
 
 
-
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def log_admin_user_in(request):
-    data = request.data
-
-    username = data['username']
-    password = data["password"]
-
-    user = authenticate(request, username=username, password=password)
-    status = "failed"
-    if user.is_superuser:
-        login(request, user)
-        status = "success"
-    return Response({"status": status})
-
-
 @api_view(["POST"])
 @authentication_classes([JWTAuthentication])
-@permission_classes([IsAdminUser])
+@permission_classes([IsAuthenticated])
 def list_houses(request):
     data = request.data
     print(data)
@@ -489,10 +642,17 @@ def list_houses(request):
     garages = data["garageCount"]
     floors = data["floorCount"]
     area = data["area"]
-    address = data["address"]
+    street = data["street"]
     price = data["price"]
 
+    title = data["title"]
+    description = data["description"]
+    cooling = data["cooling"]
+    heating = data["heating"]
+    yearBuilt = data["yearBuilt"]
+
     country = Country.objects.get(country_id=data["country"])
+    state = State.objects.get(id=data["state"])
     city = City.objects.get(city_id=data["city"])
 
     house = None
@@ -502,14 +662,25 @@ def list_houses(request):
         number_of_garages=garages,
         number_of_floors=floors,
         area=area,
-        address_line_1=address,
-        address_line_2='',
+        street=street,
         price=price,
         country=country,
         city=city,
+        state=state,
+        description=description,
+        cooling=cooling,
+        heating=heating,
+        year_built=yearBuilt,
+        title=title,
         status=EstateStatus.objects.get(id=1)
     )
 
+    try:
+        house.agent = request.user.agent
+        house.save()
+    except:
+        pass
+    print(files)
     if house is not None:
         for key, file in files.items():
             property_media = PropertyMedia.objects.create(
@@ -580,31 +751,199 @@ def get_active_chats(request):
     return Response({})
 
 
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@authentication_classes([])
+def get_agents_information(request):
+    response = {"status": "failed"}
+
+    try:
+        agents = Agent.objects.all()
+        agentsData = []
+        for agent in agents:
+            agentsData.append(
+                {
+                    "firstName": agent.user.first_name,
+                    "lastName": agent.user.last_name,
+                    "bio": agent.bio
+                }
+            )
+        response["status"] = "ok"
+        response["agentsData"] = agentsData
+    except:
+        pass
+
+    return Response(response)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def get_agent_information(request):
+    response = {"status": "failed"}
+    user = request.user
+    try:
+        agent = user.agent
+
+        if agent is not None:
+            response["data"] = {
+                "username": user.username,
+                "firstName": user.first_name,
+                "lastName": user.last_name,
+                "title": agent.title,
+                "bio": agent.bio,
+                "phone": agent.phone_number
+            }
+
+            available_status = EstateStatus.objects.get(id=1)
+            sold_status = EstateStatus.objects.get(id=2)
+            rented_status = EstateStatus.objects.get(id=3)
+            available_to_rent_status = EstateStatus.objects.get(id=4)
+            reserved_status = EstateStatus.objects.get(id=5)
+
+            house_list = agent.house_set.all()
+            land_list = agent.land_set.all()
+
+            available_houses = agent.house_set.filter(status=available_status)
+            sold_houses = agent.house_set.filter(status=sold_status)
+            rented_houses = agent.house_set.filter(status=rented_status)
+            available_to_rent_houses = agent.house_set.filter(status=available_to_rent_status)
+            reserved_houses = agent.house_set.filter(status=reserved_status)
+
+            response["data"]["availableProperties"] = len(available_houses)
+            response["data"]["soldProperties"] = len(sold_houses)
+            response["data"]["rentedProperties"] = len(rented_houses)
+            response["data"]["availableToRentProperties"] = len(available_to_rent_houses)
+            response["data"]["reservedProperties"] = len(reserved_houses)
+
+            response["data"]["numberOfHouses"] = len(house_list)
+            response["data"]["numberOfLands"] = len(land_list)
+            response["data"]["totalListings"] = len(house_list) + len(land_list)
+            # print(len(house_list))
+
+            try:
+                profile_image = agent.profile_image
+                response["data"]["profileImageURL"] = settings.DOMAIN +profile_image.url
+            except:
+                pass
+
+            try:
+                houses = agent.house_set.all()
+                # print(houses)
+            except Exception as exception:
+                print(exception)
+                pass
+
+        response["status"] = "ok"
+    except Exception as e:
+        print(e)
+
+    # print(response)
+
+    return Response(response)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def update_agent_information(request):
+    response = {"status": "failed"}
+    try:
+        data = request.data
+        # print(data)
+        user = request.user
+
+        if user is not None:
+            try:
+                userName = data["userName"]
+                user.username = userName
+            except:
+                pass
+
+            try:
+                firstName = data["firstName"]
+                user.first_name = firstName
+            except:
+                pass
+
+            try:
+                lastName = data["lastName"]
+                user.last_name = lastName
+            except:
+                pass
+
+            user.save()
+
+            agent = user.agent
+            if agent is not None:
+                try:
+                    phoneNumber = data["phoneNumber"]
+                    agent.phone_number = phoneNumber
+                except:
+                    pass
+
+                try:
+                    bio = data["bio"]
+                    agent.bio = bio
+                except:
+                    pass
+
+                try:
+                    title = data["title"]
+                    agent.title = title
+                except:
+                    pass
+
+                try:
+                    os.remove(agent.profile_image.path)
+                except Exception as exception:
+                    # print(exception)
+                    pass
+
+
+                try:
+                    profileImage = data["agentProfileImage"]
+                    agent.profile_image = profileImage
+                    agent.save()
+                except Exception as exception:
+                    # print(exception)
+                    pass
+
+                agent.save()
+
+            response["status"] = "ok"
+    except Exception as e:
+        print(e)
+    return Response(response)
+
+
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
-def agent_login(request):
-    return Response({})
-
-
-
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def agent_authenticate(request):
+@authentication_classes([])
+def authenticate_agent(request):
     data = request.data
     agentUserName = data["username"]
     agentPassword = data["password"]
 
-    user = authenticate(username=agentUserName, password=agentPassword)
-    login(request, username=user.username, password=user.password)
-    # user = User.object.get(username=agentUserName, password=agentPassword)
-    status = {"status": "none"}
-    if user is not None:
-        agent = Agent.objects.get(user=user)
-        if agent is not None:
-            status["status"] = "ok"
+    # user = authenticate(username=agentUserName, password=make_password(agentPassword))
+    # login(request, username=user.username, password=user.password)
+    user = User.objects.get(username=agentUserName)
+    response = {"status": "faile"}
+    if user.check_password(agentPassword):
+        print(user)
+        if user is not None:
+            agent = Agent.objects.get(user=user)
+            print(agent)
+            if agent is not None:
+                refresh = RefreshToken.for_user(user)
+                access = refresh.access_token
+                response["access"] = str(access)
+                response["refresh"] = str(refresh)
+                response["status"] = "ok"
 
-    return Response({"data": status})
+
+    return Response(response)
 
 
 @api_view(["POST"])
@@ -613,7 +952,7 @@ def agent_authenticate(request):
 def initialize_chat_(request):
     data = request.data
     # print(dir(request))
-    # print("Request data: ", request.data)
+    print("Request data: ", request.data)
     agentID = data["agent_id"]
     status = "failed"
 
@@ -630,8 +969,11 @@ def initialize_chat_(request):
             agent_buyer_contact = None
             try:
                 agent_buyer_contact = AgentBuyerContact.objects.get(agent=agentObject, buyer=buyer)
-            except:
+            except Exception as exception:
                 agent_buyer_contact = AgentBuyerContact.objects.create(agent=agentObject, buyer=buyer)
+            
+
+            print(agent_buyer_contact)
 
             if agent_buyer_contact is not None:
                 status = "ok"
@@ -645,18 +987,31 @@ def initialize_chat_(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def get_chat_contact_list(request):
-    buyer = Buyer.objects.get(user=request.user)
-    agentBuyerContacts = AgentBuyerContact.objects.filter(buyer=buyer)
+    agentBuyerContacts = None
+
+    receiver = None
+    sender = None
+
+    try:
+        sender = request.user.buyer
+        agentBuyerContacts = AgentBuyerContact.objects.filter(buyer=sender)
+    except:
+        sender = request.user.agent
+        agentBuyerContacts = AgentBuyerContact.objects.filter(agent=sender)
 
     # print(agentBuyerContacts)
     contact_data = []
     for contact in agentBuyerContacts:
         # print(contact)
-        contact_data.append({
-            "agent_id": contact.agent.user.id,
-            "agent_name": contact.agent.user.username,
-            "contact_id": contact.id
-        })
+        receiver = contact.buyer if contact.agent == sender else contact.agent
+        contact_data.append(
+            {
+                "receiver_id": receiver.user.id,
+                "receiver_name": receiver.user.first_name + ' ' + receiver.user.last_name,
+                "contact_id": contact.id,
+                "receiverProfileImage": settings.DOMAIN + receiver.profile_image.url if receiver.profile_image else None
+            }
+        )
 
     return Response({"contacts": contact_data})
 
@@ -668,29 +1023,45 @@ def get_messages(request):
     response = {"status": "failed"}
 
     data = request.data
+
+    agent_chat_id = None
+    agent_chat = None
+    sender = None
+    receiver = None
+
     try:
         agent_chat_id = data["agentChatID"]
-        buyer = Buyer.objects.get(user=request.user)
         agent_chat = AgentBuyerContact.objects.get(id=agent_chat_id)
+        # print(agent_chat)
+        try:
+            sender = request.user.buyer
+        except:
+            sender = request.user.agent
 
-        messages = []
-        if agent_chat.buyer == buyer:
-            print(agent_chat.agentbuyermessage_set.all())
+
+        if agent_chat is not None and sender is not None:
+            messages = []
             for message in agent_chat.agentbuyermessage_set.all():
                 owner = "other"
-                if message.sent_from == request.user:
+                if message.sent_from == sender.user:
                     owner = "me"
+
+                hour = message.date_time.hour
+                minute = message.date_time.minute if message.date_time.minute > 9 else f"0{message.date_time.minute}"
+                # minute = message.date_time.minute
 
                 messages.append({
                     "id": message.id,
                     "content": message.message,
-                    "owner": owner
+                    "owner": owner,
+                    "senderProfileImage": settings.DOMAIN + sender.profile_image.url if sender.profile_image else None,
+                    "senderName": message.sent_from.first_name + ' ' + message.sent_from.last_name,
+                    "time": f"{hour}:{minute} {message.date_time.strftime('%p')}"
                 })
-        
-        response["messages"] = messages
-        response["status"] = "ok"
-        print(messages)
-        # print(agent_chat)
+            
+            response["messages"] = messages
+            response["status"] = "ok"
+            print(messages)
     except:
         pass
 

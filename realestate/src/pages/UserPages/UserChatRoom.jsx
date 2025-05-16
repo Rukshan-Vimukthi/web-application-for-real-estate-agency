@@ -6,11 +6,17 @@ import { isLoggedIn } from "../../functions/common";
 import { EmojiSmile, File, Paperclip, SendArrowUpFill } from "react-bootstrap-icons";
 import "../styles/styles.css";
 
+// import ChatRoomBackgroundImage from "../../assets/ChatGPT Image May 17, 2025, 12_17_15 AM.png";
+// import ChatRoomBackgroundImage from "../../assets/ChatGPT Image May 16, 2025, 07_53_59 PM.png";
+import ChatRoomBackgroundImage from "../../assets/ChatGPT Image May 16, 2025, 11_56_27 PM.png";
+
 export default function UserChatRoom(data){
     const navigate = useNavigate();
     const [contacts, setContacts] = useState([]);
     const [messages, setMessages] = useState([]);
     const [selectedContactID, setSelectedContactID] = useState(null);
+    const [receiverProfileImage, setReceiverProfileImage] = useState(null);
+
     const messageBoxRef = useRef();
 
     const [chatID, setChatID] = useState([]);
@@ -64,25 +70,44 @@ export default function UserChatRoom(data){
         return () => clearInterval(interval);
     }, [selectedContactID]);
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = "auto";
+        }
+    }, []);
+
     return (
     <div className="row vh-100 vw-100 pt-3">
-        <div className="col-3 py-5 px-4 vh-75 overflow-y-scroll" style={{backgroundColor: "#0000FF0A"}}>
+        <div className="col-3 py-5 px-4 vh-75 overflow-y-scroll" style={{backgroundColor: "#0000FF1A"}}>
             {
                 contacts.map(contact => {
                     return (
-                    <Row key={contact.contact_id} className="rounded-2" style={{height: "60px", backgroundColor: "#0000FF0A", borderTop: "solid", borderTopColor: selectedContactID == contact.contact_id ? "#0000FF0F" : "transparent"}}  onClick={() => {
+                    <Row key={contact.contact_id} className="rounded-2 my-1" 
+                    style={
+                        {
+                            height: "60px", 
+                            backgroundColor: "#0000FF0A", 
+                            borderTop: "solid", 
+                            borderTopColor: selectedContactID == contact.contact_id ? "#0000FF0F" : "transparent",
+                            boxShadow: selectedContactID == contact.contact_id ? "0px 0px 20px 1px #0000255F" : "0px 0px 20px 1px #0000",
+                        }
+                    }  onClick={() => {
                         setSelectedContactID(contact.contact_id);
+                        setReceiverProfileImage(contact.receiverProfileImage);
                         console.log(contact.contact_id);
                         // setMessages([]);
                         // setChatID(contact.contact_id);
                         // loadMessages();
                     }}>
-                        <Col sm={2} className="d-flex align-items-center">
-                            <div style={{width: "40px", height: "40px", backgroundColor: "#AAA", borderRadius: "20px"}}></div>
+                        <Col sm={4} lg={3} className="d-flex align-items-center">
+                            <div style={{width: "40px", height: "40px", backgroundColor: "#AAA", borderRadius: "20px", backgroundImage: `url(${contact.receiverProfileImage})`, backgroundSize: "contain", backgroundRepeat: "no-repeat"}}></div>
                         </Col>
-                        <Col sm={10} className=" d-flex align-items-center justify-content-start">
+                        <Col sm={8} lg={9} className=" d-flex align-items-center justify-content-start">
                             <Row>
-                                {contact.agent_name}
+                                {contact.receiver_name}
+                                {/* {contact.receiverProfileImage} */}
                             </Row>
                         </Col>
                     </Row>
@@ -93,23 +118,36 @@ export default function UserChatRoom(data){
 
         <div className="col-9 py-5 d-flex flex-column vh-100">
             <div className="row" style={{height: "70vh"}}>
-                <Col sm={12} className="text-black d-flex flex-column py-3 overflow-y-scroll rounded-3 hidden-scroll-bar" style={{height: "70vh", backgroundColor: "#0000FF0A"}}>
+                <Col sm={12} className="text-black d-flex flex-column py-3 overflow-y-scroll rounded-3 hidden-scroll-bar" 
+                style={{height: "70vh", backgroundColor: "#0000FF0A", backgroundImage: `linear-gradient(rgba(0, 0, 200, 0.08), rgba(0, 0, 200, 0.08)), url(${ChatRoomBackgroundImage})`, backgroundSize: "contain", backgroundRepeat: "repeat"}}>
                     {messages.map(message => {
                         return <Row className={message.owner == 'me' ? "justify-content-end" : "justify-content-start"}>
-                            <div className="w-auto py-2 d-flex flex-column gap-2">
-                                <Col sm={12} className="d-flex align-items-center gap-2">
-                                    <div className="" style={{width: "20px", height: "20px", backgroundColor: "#555", borderRadius: "10px"}}></div>
-                                    John
-                                </Col>
-                                <Col sm={12}>
-                                    <div className="w-auto py-2 text-white px-2 " style={{backgroundColor: "#5500FF", borderRadius: "10px 10px 0px 10px"}}>
-                                        {message.content}
-                                    </div>
-                                </Col>
-                                <Col sm={12}>
-                                    <div>8:00 AM</div>
-                                </Col>
-                            </div>
+                            <Col xs={5} className="py-2 d-flex flex-column gap-2">
+                                <Row>
+                                    <Col sm={12} className="d-flex align-items-center gap-2 pb-1 ">
+                                        <div className="" style={
+                                            {
+                                                width: "40px", 
+                                                height: "40px", 
+                                                backgroundColor: "#555", 
+                                                borderRadius: "20px", 
+                                                backgroundImage: message.owner == 'other' ? `url(${receiverProfileImage})` : `url(${message.senderProfileImage})`, 
+                                                backgroundSize: "cover", 
+                                                backgroundRepeat: "no-repeat"
+                                            }
+                                        }></div>
+                                        {message.owner == "me" ? "Me" : message.senderName}
+                                    </Col>
+                                    <Col sm={12}>
+                                        <div className="w-auto py-2 text-white px-2 " style={{backgroundColor: "#5500FF", borderRadius: (message.owner == 'me' ? "10px 10px 0px 10px" : "10px 10px 10px 0px")}}>
+                                            {message.content}
+                                        </div>
+                                    </Col>
+                                    <Col sm={12}>
+                                        <div>{message.time}</div>
+                                    </Col>
+                                </Row>
+                            </Col>
                         </Row>
                     })}
                 </Col>

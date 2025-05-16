@@ -2,6 +2,18 @@ import "./components.css";
 
 import 'react-bootstrap-icons'
 import { useEffect, useState } from "react";
+import { Col, Row } from "react-bootstrap";
+
+
+export function TabItemContainer(props){
+    return (
+        <Row>
+            <Col xs={12} className="d-flex flex-row flex-wrap flex-md-column">
+                {props.children}
+            </Col>
+        </Row>
+    );
+}
 
 
 export function TabItem(props){
@@ -43,6 +55,18 @@ export function TabItem(props){
     )
 }
 
+
+
+export function TabContentContainer(props){
+    return (
+        <Row>
+            <Col xs={12}>
+                {props.children}
+            </Col>
+        </Row>
+    )
+}
+
 export function TabContent(props){
     return (
         <div className={"row vh-100 p-3 " + (props.active ? "d-flex" : "d-none")} id={props.for + "-content"}>
@@ -56,10 +80,10 @@ export function TabView(props){
         <>
         {props.tabAlignment == "left" ?
         <div className="row">
-            <div className="col-2 bg-black vh-100">
+            <div className="col-12 col-md-2 bg-black vh-100">
             {props.children[0]}
             </div>
-            <div className="col-10 vh-100">
+            <div className="col-12 px-0 col-md-10 vh-100">
             {props.children[1]}
             </div>
         </div>
