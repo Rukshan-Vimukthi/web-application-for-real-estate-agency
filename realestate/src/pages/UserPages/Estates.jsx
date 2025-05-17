@@ -18,6 +18,7 @@ export default function Estates(){
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
+    const [selectedHouse, setSelectedHouse] = useState(null);
 
     const [showRequestAVisitDialog, setShowRequestAVisitDialog] = useState(false);
     const showRequestAVisitDialogRef = useRef(showRequestAVisitDialog);
@@ -124,6 +125,7 @@ export default function Estates(){
                         agentLastName={house.agentLastName}
                         onRequestVisit={() => {
                             setShowRequestAVisitDialogRef(true);
+                            setSelectedHouse(house.houseId);
                         }}
                     />
                     );
@@ -169,7 +171,7 @@ export default function Estates(){
     return (
         <div className="row pt-2 h-auto mt-5">
 
-            <RequestPropertyVisitDialog visible={showRequestAVisitDialogRef.current} setVisible={setShowRequestAVisitDialogRef}>
+            <RequestPropertyVisitDialog houseID={selectedHouse} visible={showRequestAVisitDialogRef.current} setVisible={setShowRequestAVisitDialogRef}>
 
             </RequestPropertyVisitDialog>
 

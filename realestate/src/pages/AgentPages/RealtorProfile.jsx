@@ -2,7 +2,7 @@ import { Card, CardBody, CardHeader, Col, FormCheck, Row, Tab, Tabs } from "reac
 import { TabView, TabContent, TabItem, TabItemContainer, TabContentContainer } from "../../components/custom-components/components";
 
 import "./css/style.css";
-import { CheckCircleFill, GraphUp, GraphUpArrow, KeyFill, PencilFill, StarFill, Upload } from "react-bootstrap-icons";
+import { CheckCircleFill, ClockFill, GraphUp, GraphUpArrow, KeyFill, PencilFill, StarFill, Upload } from "react-bootstrap-icons";
 import { FaCheckCircle, FaHome, FaKey, FaRegCalendarAlt } from "react-icons/fa";
 import { GiHouseKeys, GiPencil } from "react-icons/gi";
 import Ratings from "./components/Ratings";
@@ -12,6 +12,7 @@ import api from "../../api/api";
 import Listings from "./TabContents/Listings";
 
 import "../../components/css/style.css";
+import HouseVisitRequestDialog from "../../components/HouseVisitRequestDialog";
 
 export default function RealtorProfile(){
     const [agentInformation, setAgentInformation] = useState({})  
@@ -99,6 +100,15 @@ export default function RealtorProfile(){
         }
     }
 
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [showSelectedRequestViewDialog, setShowSelectedRequestViewDialog] = useState(false);
+
+    const showSelectedRequestViewDialogRef = useRef(showSelectedRequestViewDialog);
+    const setShowSelectedRequestViewDialogRef = (data) => {
+        showSelectedRequestViewDialogRef.current = data;
+        setShowSelectedRequestViewDialog(data);
+    }
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -122,6 +132,12 @@ export default function RealtorProfile(){
                 <TabContentContainer>
                     <TabContent for="dashboard" active={true}>
                         <Col xs={12} md={6} lg={7} xl={8} className="d-flex flex-column gap-3">
+                            <HouseVisitRequestDialog 
+                                title="House Visit Request" 
+                                visible={showSelectedRequestViewDialogRef.current} 
+                                setVisible={setShowSelectedRequestViewDialogRef} 
+                                requestData={selectedRequest}/>
+
                             <Row className="gap-0 flex-wrap">
                                 <Col xs={12} lg={6} xl={3} className="">
                                     <Card className="zoom-on-hover" style={{boxShadow: "0px 0px 15px 1px #0004"}}>
@@ -240,6 +256,32 @@ export default function RealtorProfile(){
                                     </Row>
                                 </Col>
                             </Row>
+                            <Row>
+                                <Col xs={12} lg={6}>
+                                    <Card className="h-100" style={{boxShadow: "0px 0px 15px 1px #0004"}}>
+                                        <CardHeader className="fs-4 fw-semibold">
+                                            <Row>
+                                                <Col xs={9}>Pending Requests</Col>
+                                                <Col xs={3} className="d-flex justify-content-end align-items-center"><ClockFill size={28} /></Col>
+                                            </Row>
+                                        </CardHeader>
+                                        <CardBody className="d-flex flex-column gap-2 text-black">
+                                            {agentInformation?.propertyVisitRequests?.map((request) => {
+                                                return(
+                                                    <Row key={request.id} className="rounded-2 d-flex align-items-center py-1 event-card" style={{backgroundColor: "#0000FF20", height: "50px"}}>
+                                                        <Col xs={8} className="fw-semibold">House Visit with {request.buyer.userName}</Col>
+                                                        <Col xs={4} className="d-flex justify-content-end"><button className="btn btn-primary fw-bold" onClick={() => {
+                                                            setSelectedRequest(request);
+                                                            setShowSelectedRequestViewDialogRef(true);
+                                                        }}>VIEW</button></Col>
+                                                    </Row>
+                                                );
+                                            })}
+
+                                        </CardBody>
+                                    </Card>
+                                </Col>
+                            </Row>
                         </Col>
                         <Col xs={12} md={6} lg={5} xl={4} className="d-flex flex-column gap-3">
                             <Row className="">
@@ -291,6 +333,10 @@ export default function RealtorProfile(){
                                         </CardBody>
                                     </Card>
                                 </Col>
+                            </Row>
+
+                            <Row>
+
                             </Row>
 
                         </Col>

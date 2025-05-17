@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import House, Land, PropertyMedia, EstateStatus
+from .models import House, Land, PropertyMedia, EstateStatus, PropertyVisitTimeSlots, PropertyVisitRequest
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic.detail import DetailView
 from django.urls import path, reverse
@@ -45,7 +45,7 @@ class HouseAdmin(admin.ModelAdmin):
 #     list_display = []
 
 
-admin.site.register([Land, PropertyMedia, EstateStatus])
+admin.site.register([Land, PropertyMedia, EstateStatus, PropertyVisitTimeSlots, PropertyVisitRequest])
 
 
 class HouseView(PermissionRequiredMixin, DetailView):

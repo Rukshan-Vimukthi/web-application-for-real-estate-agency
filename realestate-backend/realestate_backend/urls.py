@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/token', TokenObtainPairView().as_view()),
     # path('api/public/', include('api.urls')),
     path('api/v1/', include('api.urls')),
+    path('api/v1/estates/', include('Estates.urls')),
     path('api/admin/', include('WebAdmin.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

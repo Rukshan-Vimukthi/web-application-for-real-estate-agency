@@ -69,7 +69,7 @@ export function TabContentContainer(props){
 
 export function TabContent(props){
     return (
-        <div className={"row vh-100 p-3 " + (props.active ? "d-flex" : "d-none")} id={props.for + "-content"}>
+        <div className={"row vh-100 overflow-y-scroll p-3 " + (props.active ? "d-flex" : "d-none")} id={props.for + "-content"}>
             {props.children}
         </div>
     )

@@ -1,6 +1,5 @@
 from django.db import models
 from UserProfile.models import *
-from UserProfile.models import Agent
 
 
 # Create your models here.
@@ -58,3 +57,18 @@ class PropertyMedia(models.Model):
     land = models.ForeignKey(Land, on_delete=models.CASCADE, blank=True, null=True)
     house = models.ForeignKey(House, on_delete=models.CASCADE, blank=True, null=True)
     is_thumbnail = models.BooleanField()
+
+
+class PropertyVisitTimeSlots(models.Model):
+    id = models.AutoField(primary_key=True)
+    time_slot = models.CharField(max_length=50, null=True)
+
+
+class PropertyVisitRequest(models.Model):
+    id = models.AutoField(primary_key=True)
+    date = models.DateField(null=True)
+    time_slot = models.ForeignKey(PropertyVisitTimeSlots, on_delete=models.CASCADE, null=True)
+    time = models.TimeField(null=True)
+    extra_note = models.TextField(null=True)
+    buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE)
+    property = models.ForeignKey(House, on_delete=models.CASCADE)

@@ -22,6 +22,8 @@ from django.core import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from Estates.models import PropertyVisitRequest
+
 from Estates.models import *
 
 import datetime
@@ -171,9 +173,13 @@ def log_user_in(request):
 
 
 @api_view(["GET"])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_profile_information(request):
-    return Response()
+    response = {"status": "failed"}
+    user_profile_information = {}
+    response["status"] = "ok"
+    return Response(response)
 
 
 @api_view(["GET"])
@@ -819,6 +825,28 @@ def get_agent_information(request):
             response["data"]["numberOfHouses"] = len(house_list)
             response["data"]["numberOfLands"] = len(land_list)
             response["data"]["totalListings"] = len(house_list) + len(land_list)
+            response["data"]["propertyVisitRequests"] = []
+
+            for house in house_list:
+                for request in house.propertyvisitrequest_set.all():
+                    response["data"]["propertyVisitRequests"].append({
+                        "id": request.id,
+                        "date": request.date,
+                        "timeSlot": {
+                            "id": request.time_slot.id,
+                            "timeSlot": request.time_slot.time_slot,
+                        },
+                        "agentName": agent.user.first_name,
+                        "extraNote": request.extra_note,
+                        "time": request.time,
+                        "buyer": {
+                            "id": request.buyer.id,
+                            "userName": request.buyer.user.first_name + ' ' + request.buyer.user.last_name,
+                            "email": request.buyer.user.email,
+                            "phoneNumber": request.buyer.phone_number
+                        }
+                    })
+
             # print(len(house_list))
 
             try:
